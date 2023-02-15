@@ -1,15 +1,8 @@
 {{ config(materialized='view') }}
- 
-with tripdata as 
-(
-  select *,
-    row_number() over(partition by vendorid, tpep_pickup_datetime) as rn
-  from {{ source('staging','yellow_tripdata') }}
-  where vendorid is not null 
-)
+
 select
    -- identifiers
-    {{ dbt_utils.surrogate_key(['vendorid', 'tpep_pickup_datetime']) }} as tripid,
+    generate_uuid() as tripid,
     cast(vendorid as integer) as vendorid,
     cast(ratecodeid as integer) as ratecodeid,
     cast(pulocationid as integer) as  pickup_locationid,
@@ -38,13 +31,8 @@ select
     cast(payment_type as integer) as payment_type,
     {{ get_payment_type_description('payment_type') }} as payment_type_description, 
     cast(congestion_surcharge as numeric) as congestion_surcharge
-from tripdata
-where rn = 1
-
--- dbt build --m <model.sql> --var 'is_test_run: false'
+from {{ source('staging','yellow_tripdata') }}
 {% if var('is_test_run', default=true) %}
-
   limit 100
-
 {% endif %}
 
