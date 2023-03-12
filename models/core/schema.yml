@@ -25,4 +25,31 @@ models:
             - not_null:
                 severity: error
       
+metrics:
+  - name: average_distance
+    label: Average Distance
+    model: ref('fact_trips')
+    description: "The average trip distance"
+
+    calculation_method: average
+    expression: trip_distance
+
+    timestamp: pickup_datetime
+    time_grains: [month, quarter, year]
+
+    tags:
+    - piperider
       
+  - name: vendor_ids
+    label: Vendor Ids
+    model: ref('fact_trips')
+    description: "Vendor ID over the years"
+
+    calculation_method: count
+    expression: vendorid
+
+    timestamp: pickup_datetime
+    time_grains: [year]
+
+    tags:
+    - piperider

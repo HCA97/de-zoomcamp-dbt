@@ -55,3 +55,6 @@ inner join dim_zones as pickup_zone
 on trips_unioned.pickup_locationid = pickup_zone.locationid
 inner join dim_zones as dropoff_zone
 on trips_unioned.dropoff_locationid = dropoff_zone.locationid
+where EXTRACT(YEAR FROM trips_unioned.pickup_datetime) in (2018, 2019, 2020)
+and EXTRACT(YEAR FROM trips_unioned.dropoff_datetime) in (2019, 2020, 2021)
+
